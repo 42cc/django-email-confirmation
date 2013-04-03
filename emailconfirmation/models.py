@@ -1,5 +1,5 @@
 import datetime
-from django.utils.timezone import utc
+from django.utils.timezone import now
 from random import random
 
 from django.conf import settings
@@ -141,7 +141,7 @@ class EmailConfirmationManager(models.Manager):
 class EmailConfirmation(models.Model):
     
     email_address = models.ForeignKey(EmailAddress)
-    sent = models.DateTimeField(auto_now_add=True)
+    sent = models.DateTimeField(default=now)
     confirmation_key = models.CharField(max_length=40)
     
     objects = EmailConfirmationManager()
@@ -149,7 +149,7 @@ class EmailConfirmation(models.Model):
     def key_expired(self):
         expiration_date = self.sent + datetime.timedelta(
             days=settings.EMAIL_CONFIRMATION_DAYS)
-        return expiration_date <= datetime.datetime.utcnow().replace(tzinfo=utc)
+        return expiration_date <= now()
 
     key_expired.boolean = True
     
